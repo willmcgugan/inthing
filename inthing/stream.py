@@ -39,7 +39,7 @@ class Stream(object):
 
 	def _get(self, stream, password):
 		try:
-			result = self.rpc.call('stream.get', stream=id, password=id)
+			result = self.rpc.call('stream.get', stream=stream, password=password)
 		except JSONRPCError as e:
 			raise errors.StreamError(text_type(e))
 		self.id = result['uuid']
