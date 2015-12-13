@@ -6,6 +6,7 @@ from . import errors
 from .compat import text_type
 from .jsonrpc import JSONRPCError
 
+import json
 
 class Stream(object):
 	"""A stream of events"""
@@ -15,7 +16,6 @@ class Stream(object):
 		self.id = None
 		self.url = None
 		super(Stream, self).__init__()
-
 		self._new()
 
 	def __repr__(self):
@@ -32,3 +32,22 @@ class Stream(object):
 		else:
 			self.id = result['uuid']
 			self.url = result['url']
+
+	def _new_event(self, event):
+		return self._new_events([event])
+
+	def _new_events(self, events):
+
+		event_data = [event.get_event_data() for event in events]
+		
+		results = self.rpc.call('event.new', stream=self.id, events=event_data)
+		for event, event_id in zip(events, results['ids']):
+			event.id = event_id or event.id
+
+	def add(self, event):
+		event.set_stream(self)
+		event.save()
+
+
+		
+
