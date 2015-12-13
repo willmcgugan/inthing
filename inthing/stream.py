@@ -11,12 +11,16 @@ import json
 class Stream(object):
 	"""A stream of events"""
 	
-	def __init__(self):
+	def __init__(self, id=None, password=None):
 		self.rpc = rpc.get_interface()
 		self.id = None
 		self.url = None
 		super(Stream, self).__init__()
-		self._new()
+
+		if id is not None:
+			self._get(id, password)
+		else:
+			self._new()
 
 	def __repr__(self):
 		if self.url is None:
@@ -32,6 +36,14 @@ class Stream(object):
 		else:
 			self.id = result['uuid']
 			self.url = result['url']
+
+	def _get(self, stream, password):
+		try:
+			result = self.rpc.call('stream.get', stream=id, password=id)
+		except JSONRPCError as e:
+			raise errors.StreamError(text_type(e))
+		self.id = result['uuid']
+		self.url = result['url']
 
 	def _new_event(self, event):
 		return self._new_events([event])
