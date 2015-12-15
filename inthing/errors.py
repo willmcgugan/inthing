@@ -3,9 +3,8 @@ from __future__ import print_function
 
 
 class StreamError(Exception):
-	pass
+    pass
 
 
 class NoStream(Exception):
-	pass
-	
+    pass
