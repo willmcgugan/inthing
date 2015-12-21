@@ -4,6 +4,10 @@ import sys
 stream = stream.Stream(id="test", password="password")
 
 print(stream)
-text = events.Text('test', sys.argv[1])
-stream.add(text)
-print(text)
+
+import datetime
+
+for _ in range(3):
+	text = events.Text('test', datetime.datetime.now().ctime())
+	stream.add(text)
+	print(text)
