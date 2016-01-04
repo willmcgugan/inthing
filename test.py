@@ -8,6 +8,6 @@ print(stream)
 import datetime
 
 for _ in range(3):
-	text = events.Text('test', datetime.datetime.now().ctime())
-	stream.add(text)
-	print(text)
+    text = events.Text('test', datetime.datetime.now().ctime())
+    stream.add(text)
+    print(text)

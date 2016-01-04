@@ -55,7 +55,6 @@ class Stream(object):
         for event, event_id in zip(events, results['ids']):
             event.id = event_id or event.id
 
-
     def add(self, event):
         event.set_stream(self)
         event.save()
