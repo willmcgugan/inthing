@@ -28,11 +28,11 @@ setup(
     author_email="will@willmcgugan.com",
     url="http://www.moyaproject.com",
 
-    # entry_points={
-    #     "console_scripts": [
-    #         'moya = moya.command.app:main',
-    #     ]
-    # },
+    entry_points={
+        "console_scripts": [
+            'inthing = inthing.command.app:main',
+        ]
+    },
     # scripts=[
     #     'scripts/moya-workon',
     # ],

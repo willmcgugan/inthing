@@ -7,7 +7,5 @@ print(stream)
 
 import datetime
 
-for _ in range(3):
-	text = events.Text('test', datetime.datetime.now().ctime())
-	stream.add(text)
-	print(text)
+stream.add_text('Hello, World!', title="New Text Event")
+stream.add_image('bear.jpg', title="Bear", text="A bear I shot in Finland")
