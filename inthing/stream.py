@@ -21,8 +21,8 @@ class Stream(object):
 
     def __init__(self, id=None, password=None, generator=None):
         self.rpc = rpc.get_interface()
-        self.id = None
-        self.password = None
+        self.id = id
+        self.password = password
 
         if generator is None:
             generator = platform.node()
@@ -102,3 +102,6 @@ class Stream(object):
         event.add_image(path)
         self._add_event(event)
 
+    def add(self, event):
+        event.set_stream(self)
+        event.save()

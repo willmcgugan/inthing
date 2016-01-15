@@ -225,6 +225,3 @@ class WSJSONRPC(JSONRPC):
         response_json = self.ws.recv()
         response = json.loads(response_json)
         return response
-
-
-

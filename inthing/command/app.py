@@ -61,7 +61,7 @@ class Inthing(object):
                 import traceback
                 traceback.print_exc(e)
             else:
-                sys.stderror.write(text_type(e))
+                sys.stderr.write(text_type(e))
             return -1
 
 
