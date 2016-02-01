@@ -26,8 +26,8 @@ class Event(SubCommand):
                             help="Markup to use for text")
         parser.add_argument('--type', dest="type",
                             help="Take screenshot")
-        parse.add_argument('--image', dest="image",
-                           help="Path to image file")
+        parser.add_argument('--image', dest="image",
+                            help="Path to image file")
         parser.add_argument('--delay', dest="delay", type=int, default=0,
                             help="Delay in taking screenshot")
 
