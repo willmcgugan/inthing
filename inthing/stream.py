@@ -5,6 +5,8 @@ import mimetypes
 import platform
 from os.path import basename
 import json
+import time
+import tempfile
 
 from . import rpc
 from . import errors
@@ -102,6 +104,13 @@ class Stream(object):
         event.add_image(path)
         self._add_event(event)
 
-    def add(self, event):
-        event.set_stream(self)
-        event.save()
+    def add_screenshot(self, delay=0, text="", title="New Screenshot", markup="markdown"):
+        if delay:
+            time.sleep(delay)
+        import pyscreenshot
+        filename = tempfile.mktemp(prefix='inthing')
+        pyscreenshot.grab_to_file(filename)
+        event = Event(type="image", title=title, text=text, markup=markup)
+        event.add_image(filename)
+        self._add_event(event)
+

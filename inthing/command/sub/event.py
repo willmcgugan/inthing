@@ -22,6 +22,14 @@ class Event(SubCommand):
                             help="Event title")
         parser.add_argument('--text', dest="text",
                             help="Event text")
+        parser.add_argument('--markup', dest='markup', default='markdown',
+                            help="Markup to use for text")
+        parser.add_argument('--type', dest="type",
+                            help="Take screenshot")
+        parse.add_argument('--image', dest="image",
+                           help="Path to image file")
+        parser.add_argument('--delay', dest="delay", type=int, default=0,
+                            help="Delay in taking screenshot")
 
     def run(self):
         args = self.args
@@ -30,6 +38,19 @@ class Event(SubCommand):
                         password=args.password or os.environ.get('INTHING_STREAM_PASSWORD', None),
                         generator=args.generator)
 
-        stream.add_text(args.text,
-                        title=args.title)
+        event_type = args.type
+
+        if event_type == 'text':
+            stream.add_text(args.text,
+                            title=args.title)
+        elif event_type == 'image':
+            stream.add_image(args.image,
+                             title=args.title,
+                             text=args.text,
+                             markup=args.markup)
+        elif event_type == 'screenshot':
+            stream.add_screenshot(text=args.text,
+                                  title=args.title,
+                                  markup=args.markup,
+                                  delay=args.delay)
         
