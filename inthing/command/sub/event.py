@@ -24,7 +24,7 @@ class Event(SubCommand):
                             help="Event text")
         parser.add_argument('--markup', dest='markup', default='markdown',
                             help="Markup to use for text")
-        parser.add_argument('--type', dest="type",
+        parser.add_argument('--type', dest="type", default='text',
                             help="Take screenshot")
         parser.add_argument('--image', dest="image",
                             help="Path to image file")
@@ -53,4 +53,6 @@ class Event(SubCommand):
                                   title=args.title,
                                   markup=args.markup,
                                   delay=args.delay)
+        else:
+            self.exit('invalid event type ({})'.format(event_type))
         

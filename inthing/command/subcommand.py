@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 from ..compat import with_metaclass
 
+import sys
 
 class SubCommandMeta(type):
     registry = {}
@@ -30,6 +31,11 @@ class SubCommandType(object):
 
     def error(self, text):
         return self.command.error(text)
+
+    def exit(self, msg='', code=-1):
+        if msg:
+            self.error(msg)
+        sys.exit(code)
 
     def run():
     	pass

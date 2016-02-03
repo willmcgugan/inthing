@@ -64,6 +64,9 @@ class Inthing(object):
                 sys.stderr.write(text_type(e))
             return -1
 
+    def error(self, msg):
+        sys.stderr.write(msg + '\n')
+
 
 def main():
     inthing = Inthing()
