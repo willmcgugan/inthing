@@ -3,10 +3,11 @@ from __future__ import print_function
 
 import mimetypes
 import platform
-from os.path import basename
+import os
 import json
 import time
 import tempfile
+from os.path import basename
 
 from . import rpc
 from . import errors
@@ -23,8 +24,13 @@ class Stream(object):
 
     def __init__(self, id=None, password=None, generator=None):
         self.rpc = rpc.get_interface()
-        self.id = id
-        self.password = password
+        self.id = id or os.environ.get('INTHING_STREAM', None)
+        self.password = password or os.environ.get('INTHING_STREAM_PASSWORD', None)
+
+        if self.id is None:
+            raise ValueError('Stream ID required')
+        if self.password is None:
+            raise ValueError('Password is required')
 
         if generator is None:
             generator = platform.node()
@@ -32,11 +38,6 @@ class Stream(object):
 
         self.url = None
         super(Stream, self).__init__()
-
-        if id is not None:
-            self._get(id, password)
-        else:
-            self._new()
 
     def __repr__(self):
         if self.url is None:
@@ -89,28 +90,30 @@ class Stream(object):
         response = requests.post(url, **post_args)
 
         result = json.loads(response.content)
-        print(result)
 
         return result
 
-    def add_text(self, text, title="Text", markup="markdown"):
+    def text(self, text, title="Text", markup="markdown"):
         """Add a text event"""
         event = Event(type="text", title=title, text=text, markup=markup)
-        self._add_event(event)
+        result = self._add_event(event)
+        return result
 
-    def add_image(self, path, text="", title="New Photo", markup="markdown"):
+    def image(self, path, text="", title="New Photo", markup="markdown"):
         """Add an image event"""
         event = Event(type="image", title=title, text=text, markup=markup)
         event.add_image(path)
-        self._add_event(event)
+        result = self._add_event(event)
+        return result
 
-    def add_screenshot(self, delay=0, text="", title="New Screenshot", markup="markdown"):
+    def screenshot(self, delay=0, text="", title="New Screenshot", markup="markdown"):
         if delay:
             time.sleep(delay)
         import pyscreenshot
         filename = tempfile.mktemp(prefix='inthing')
         pyscreenshot.grab_to_file(filename)
-        event = Event(type="image", title=title, text=text, markup=markup)
+        event = Event(type="screenshot", title=title, text=text, markup=markup)
         event.add_image(filename)
-        self._add_event(event)
+        result = self._add_event(event)
+        return result
 

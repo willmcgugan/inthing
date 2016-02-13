@@ -1,1 +1,5 @@
-__all__ = ['event']
+__all__ = [
+    'event',
+    'screenshot',
+    'text'
+]

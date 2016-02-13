@@ -40,5 +40,30 @@ class SubCommandType(object):
     def run():
     	pass
 
+
 class SubCommand(with_metaclass(SubCommandMeta, SubCommandType)):
     pass
+
+
+class EventSubCommand(SubCommand):
+
+    def add_arguments(self, parser):
+        parser.add_argument('--id', dest="id", default=None,
+                            help="ID of stream")
+        parser.add_argument('-p', '--password', dest="password", default=None,
+                            help="Stream password")
+        parser.add_argument('-g', '--generator', dest="generator", default=None,
+                            help="Event generator")
+        parser.add_argument('--markup', dest='markup', default='markdown',
+                            help="Markup to use for text")
+        parser.add_argument('--image', dest="image",
+                            help="Path to image file")
+        parser.add_argument('--delay', dest="delay", type=int, default=0,
+                            help="Delay in taking screenshot")
+
+    def on_result(self, result):
+        #print(result)
+        if result.get('status') == 'fail':
+            sys.stderr.write(result.get('msg') + '\n')
+            for field, errors in result.get('field_errors', {}).items():
+                sys.stderr.write(" * {} - {}\n".format(field, ', '.join(errors)))

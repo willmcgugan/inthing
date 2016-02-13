@@ -41,15 +41,15 @@ class Event(SubCommand):
         event_type = args.type
 
         if event_type == 'text':
-            stream.add_text(args.text,
+            stream.text(args.text,
                             title=args.title)
         elif event_type == 'image':
-            stream.add_image(args.image,
+            stream.image(args.image,
                              title=args.title,
                              text=args.text,
                              markup=args.markup)
         elif event_type == 'screenshot':
-            stream.add_screenshot(text=args.text,
+            stream.screenshot(text=args.text,
                                   title=args.title,
                                   markup=args.markup,
                                   delay=args.delay)
