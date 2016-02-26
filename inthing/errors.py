@@ -6,5 +6,17 @@ class StreamError(Exception):
     pass
 
 
-class NoStream(Exception):
+class ConnectivityError(Exception):
     pass
+
+
+class BadResponse(Exception):
+    pass
+
+
+class EventError(Exception):
+    """An error relating to an event"""
+
+
+class RateLimited(EventError):
+    """"Server has imposed a limit"""
