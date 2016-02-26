@@ -87,11 +87,27 @@ class Stream(object):
         }
 
         url = urls.event_url + '?format=json'
-        response = requests.post(url, **post_args)
+        try:
+            response = requests.post(url, **post_args)
+        except requests.ConnectionError as e:
+            msg, _ = e.message
+            raise errors.ConnectivityError("unable to post event ({})".format(msg))
 
-        result = json.loads(response.content)
+        try:
+            result = json.loads(response.content)
+        except:
+            raise errors.BadRespinse('unable to decode response from server ({})'.format(e))
+    
+        status = result.get('status', '')
 
-        return result
+        if status in ('fail', 'ok'):
+            return result
+        
+        result.get('msg', 'event error')
+        if status == 'ratelimited':
+            raise errors.RateLimited(msg)
+
+        raise error.EventError(msg)
 
     def text(self, text, title="Text", markup="markdown"):
         """Add a text event"""
