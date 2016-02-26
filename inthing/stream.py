@@ -90,24 +90,23 @@ class Stream(object):
         try:
             response = requests.post(url, **post_args)
         except requests.ConnectionError as e:
-            msg, _ = e.message
-            raise errors.ConnectivityError("unable to post event ({})".format(msg))
+            raise errors.ConnectivityError("unable to contact server")
 
         try:
             result = json.loads(response.content)
         except:
-            raise errors.BadRespinse('unable to decode response from server ({})'.format(e))
-    
+            raise errors.BadResponse('unable to decode response from server ({})'.format(e))
+
         status = result.get('status', '')
 
         if status in ('fail', 'ok'):
             return result
-        
-        result.get('msg', 'event error')
+
+        msg = result.get('msg', 'event error')
         if status == 'ratelimited':
             raise errors.RateLimited(msg)
 
-        raise error.EventError(msg)
+        raise errors.EventError(msg)
 
     def text(self, text, title="Text", markup="markdown"):
         """Add a text event"""
