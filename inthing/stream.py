@@ -110,7 +110,7 @@ class Stream(object):
         if delay:
             time.sleep(delay)
         import pyscreenshot
-        filename = tempfile.mktemp(prefix='inthing')
+        filename = tempfile.mktemp(prefix='inthing', suffix=".jpg")
         pyscreenshot.grab_to_file(filename)
         event = Event(type="screenshot", title=title, text=text, markup=markup)
         event.add_image(filename)
