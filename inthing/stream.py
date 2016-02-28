@@ -95,8 +95,8 @@ class Stream(object):
 
         try:
             result = json.loads(response.content)
-        except:
-            raise errors.BadRespinse('unable to decode response from server ({})'.format(e))
+        except Exception as e:
+            raise errors.BadResponse('unable to decode response from server ({})'.format(e))
     
         status = result.get('status', '')
 
