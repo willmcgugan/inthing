@@ -90,8 +90,7 @@ class Stream(object):
         try:
             response = requests.post(url, **post_args)
         except requests.ConnectionError as e:
-            msg, _ = e.message
-            raise errors.ConnectivityError("unable to post event ({})".format(msg))
+            raise errors.ConnectivityError("unable to contact server")
 
         try:
             result = json.loads(response.content)
@@ -102,12 +101,12 @@ class Stream(object):
 
         if status in ('fail', 'ok'):
             return result
-        
-        result.get('msg', 'event error')
+
+        msg = result.get('msg', 'event error')
         if status == 'ratelimited':
             raise errors.RateLimited(msg)
 
-        raise error.EventError(msg)
+        raise errors.EventError(msg)
 
     def text(self, text, title="Text", markup="markdown"):
         """Add a text event"""
@@ -126,7 +125,7 @@ class Stream(object):
         if delay:
             time.sleep(delay)
         import pyscreenshot
-        filename = tempfile.mktemp(prefix='inthing')
+        filename = tempfile.mktemp(prefix='inthing', suffix=".jpg")
         pyscreenshot.grab_to_file(filename)
         event = Event(type="screenshot", title=title, text=text, markup=markup)
         event.add_image(filename)
