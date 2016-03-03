@@ -1,5 +1,5 @@
-from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import mimetypes
 import platform
@@ -9,9 +9,9 @@ import time
 import tempfile
 from os.path import basename
 
-from . import rpc
 from . import errors
 from . import urls
+from .rpc import get_interface
 from .event import Event
 from .compat import text_type
 from .jsonrpc import JSONRPCError
@@ -20,17 +20,15 @@ import requests
 
 
 class Stream(object):
-    """A stream of events"""
+    """A stream of events."""
 
-    def __init__(self, id=None, password=None, generator=None):
-        self.rpc = rpc.get_interface()
+    def __init__(self, id, password=None, generator=None):
+        self.rpc = get_interface()
         self.id = id or os.environ.get('INTHING_STREAM', None)
         self.password = password or os.environ.get('INTHING_STREAM_PASSWORD', None)
 
         if self.id is None:
             raise ValueError('Stream ID required')
-        if self.password is None:
-            raise ValueError('Password is required')
 
         if generator is None:
             generator = platform.node()
@@ -40,20 +38,25 @@ class Stream(object):
         super(Stream, self).__init__()
 
     def __repr__(self):
+        """Basic stream info."""
         if self.url is None:
             return "<stream>"
         else:
             return "<stream '{}' {}>".format(self.generator, self.url)
 
-    def _new(self):
+    @classmethod
+    def new(cls):
+        """Create a new stream."""
+        rpc = get_interface()
         try:
-            result = self.rpc.call('stream.new')
+            result = rpc.call('stream.new')
         except JSONRPCError as e:
             raise errors.StreamError(text_type(e))
         else:
-            self.id = result['id']
-            self.url = result['url']
-            self.password = result['password']
+            stream = cls(id=result['id'],
+                         password=result['password'])
+            stream.url = result['url']
+        return stream
 
     def _get(self, stream, password):
         try:
@@ -65,7 +68,7 @@ class Stream(object):
         self.password = password
 
     def _add_event(self, event):
-        """Add an event"""
+        """Add an event."""
         post_args = {}
         if event.images:
             path = event.images[0]
@@ -96,7 +99,7 @@ class Stream(object):
             result = json.loads(response.content)
         except Exception as e:
             raise errors.BadResponse('unable to decode response from server ({})'.format(e))
-    
+
         status = result.get('status', '')
 
         if status in ('fail', 'ok'):
@@ -109,13 +112,13 @@ class Stream(object):
         raise errors.EventError(msg)
 
     def text(self, text, title="Text", markup="markdown"):
-        """Add a text event"""
+        """Add a text event."""
         event = Event(type="text", title=title, text=text, markup=markup)
         result = self._add_event(event)
         return result
 
     def image(self, path, text="", title="New Photo", markup="markdown"):
-        """Add an image event"""
+        """Add an image event."""
         event = Event(type="image", title=title, text=text, markup=markup)
         event.add_image(path)
         result = self._add_event(event)
@@ -131,4 +134,3 @@ class Stream(object):
         event.add_image(filename)
         result = self._add_event(event)
         return result
-
