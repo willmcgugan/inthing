@@ -2,10 +2,9 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import json
-import threading
 
 import requests
-import websocket
+
 
 
 class ProtocolError(Exception):
@@ -208,20 +207,20 @@ class JSONRPC(object):
                                 error.get('message', self.unknown_error_msg))
 
 
-class WSJSONRPC(JSONRPC):
-    """An interface to an JSONRPC server proxied over a websocket"""
+# class WSJSONRPC(JSONRPC):
+#     """An interface to an JSONRPC server proxied over a websocket"""
 
-    def __init__(self, api_url="ws://127.0.0.1:7474/api/"):
-        self.api_url = api_url
-        self.call_id = 0
-        self.ws = websocket.create_connection(self.api_url)
+#     def __init__(self, api_url="ws://127.0.0.1:7474/api/"):
+#         self.api_url = api_url
+#         self.call_id = 0
+#         self.ws = websocket.create_connection(self.api_url)
 
-    def on_close(self):
-        pass
+#     def on_close(self):
+#         pass
 
-    def _send(self, call):
-        call_json = json.dumps(call)
-        self.ws.send(call_json)
-        response_json = self.ws.recv()
-        response = json.loads(response_json)
-        return response
+#     def _send(self, call):
+#         call_json = json.dumps(call)
+#         self.ws.send(call_json)
+#         response_json = self.ws.recv()
+#         response = json.loads(response_json)
+#         return response
