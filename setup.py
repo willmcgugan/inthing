@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 # Don't forget to update version in inthing/__init__.py
 
 classifiers = [
