@@ -7,6 +7,7 @@ import os
 import json
 import time
 import tempfile
+import webbrowser
 from os.path import basename
 
 from . import errors
@@ -17,6 +18,21 @@ from .compat import text_type
 from .jsonrpc import JSONRPCError
 
 import requests
+
+
+class EventResult(object):
+    """A succesfully posted event."""
+
+    def __init__(self, url):
+        self.url = url
+
+    def __repr__(self):
+        """Summary with url."""
+        return "<event '{}''>".format(self.url)
+
+    def browse(self):
+        """Browse to the event."""
+        webbrowser.open(self.url)
 
 
 class Stream(object):
@@ -57,6 +73,10 @@ class Stream(object):
                          password=result['password'])
             stream.url = result['url']
         return stream
+
+    def browse(self):
+        """Open the stream in your browser."""
+        webbrowser.open(self.url)
 
     def _get(self, stream, password):
         try:
@@ -102,8 +122,8 @@ class Stream(object):
 
         status = result.get('status', '')
 
-        if status in ('fail', 'ok'):
-            return result
+        if status == 'ok':
+            return EventResult(result['event']['url'])
 
         msg = result.get('msg', 'event error')
         if status == 'ratelimited':
