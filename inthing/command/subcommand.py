@@ -6,12 +6,13 @@ from ..compat import with_metaclass
 
 import sys
 
+
 class SubCommandMeta(type):
     registry = {}
 
     def __new__(cls, name, base, attrs):
         new_class = type.__new__(cls, name, base, attrs)
-        if name != "SubCommand":
+        if name not in ("SubCommand", "EventSubCommand"):
             cls.registry[name.lower()] = new_class
         return new_class
 
@@ -38,7 +39,7 @@ class SubCommandType(object):
         sys.exit(code)
 
     def run():
-    	pass
+        pass
 
 
 class SubCommand(with_metaclass(SubCommandMeta, SubCommandType)):

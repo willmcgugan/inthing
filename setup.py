@@ -2,8 +2,8 @@
 
 from setuptools import setup, find_packages
 
-VERSION = "0.1.3"
-# Don't forget to update version in inthing/__init__.py
+with open('inthing/_version.py') as f:
+    exec(f.read())
 
 classifiers = [
     'Intended Audience :: Developers',
@@ -43,7 +43,8 @@ setup(
 
     classifiers=classifiers,
     install_requires=[
-        "requests"
+        'requests',
+        'pillow >= 3.1.1'
     ],
     setup_requires=["setuptools_git >= 0.3"]
 )
