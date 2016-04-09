@@ -105,6 +105,7 @@ class Stream(object):
             'type': event.type,
             'priority': event.priority,
             'markup': event.markup,
+            'description':event.description,
             'text': event.text,
             'generator': event.generator or self.generator
         }
@@ -133,24 +134,39 @@ class Stream(object):
 
     def text(self, text, title="Text", markup="markdown"):
         """Add a text event."""
-        event = Event(type="text", title=title, text=text, markup=markup)
+        event = Event(type="text",
+                      title=title,
+                      description=text,
+                      markup=markup)
         result = self._add_event(event)
         return result
 
-    def image(self, path, text="", title="New Photo", markup="markdown"):
+    def code(self, code, language=None, description=None, title="Code", markup="markdown"):
+        event = Event(type="code",
+                      title=title,
+                      markup=markup,
+                      description=description,
+                      text=code)
+        result = self._add_event(event)
+        return result
+
+    def image(self, path, description=None, title="New Photo", markup="markdown"):
         """Add an image event."""
-        event = Event(type="image", title=title, text=text, markup=markup)
+        event = Event(type="image",
+                      title=title,
+                      description=description,
+                      markup=markup)
         event.add_image(path)
         result = self._add_event(event)
         return result
 
-    def screenshot(self, delay=0, text="", title="New Screenshot", markup="markdown"):
+    def screenshot(self, delay=0, description=None, title="New Screenshot", markup="markdown"):
         if delay:
             time.sleep(delay)
         import pyscreenshot
         filename = tempfile.mktemp(prefix='inthing', suffix=".jpg")
         pyscreenshot.grab_to_file(filename)
-        event = Event(type="screenshot", title=title, text=text, markup=markup)
+        event = Event(type="screenshot", title=title, description=description, markup=markup)
         event.add_image(filename)
         result = self._add_event(event)
         return result

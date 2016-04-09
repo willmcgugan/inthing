@@ -12,10 +12,12 @@ from inthing.stream import Stream
 class Capture(EventSubCommand):
     """Capture output to a inthing Stream."""
 
+    MAX_CHARS = 64 * 1024 - 20
+
     def add_arguments(self, parser):
         super(Capture, self).add_arguments(parser)
-        parser.add_argument('-t', '--title', dest="title", required=False,
-                            help="Event title", default=None)
+        parser.add_argument('-l', '--language', dest="language", required=False,
+                            help="Programming language (if catting code)")
 
     def run(self):
         args = self.args
@@ -24,12 +26,23 @@ class Capture(EventSubCommand):
                         password=args.password,
                         generator=args.generator)
 
-        text = sys.stdin.read()
+        encoding = sys.stdin.encoding or locale.getdefaultlocale()[1]
 
+        char_count = 0
+        lines = []
+        for line in sys.stdin:
+            sys.stdout.write(line)
+            line = line.decode(encoding, 'replace')
+            if char_count + len(line) <= self.MAX_CHARS:
+                lines.append(line)
+            char_count += len(line)
+
+        text = "".join(lines)[:self.MAX_CHARS]
         if isinstance(text, bytes):
             encoding = sys.stdin.encoding or locale.getdefaultlocale()[1]
             text = text.decode(encoding, 'replace')
 
-        result = stream.text("```\n{}\n```\n".format(text),
-                             markup="markdown",
+        result = stream.text(text,
+                             type="code",
+                             code_language=args.language,
                              title=args.title or "Capture")

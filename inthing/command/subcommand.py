@@ -1,10 +1,12 @@
-from __future__ import unicode_literals
-from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import os
+import sys
 
 from ..compat import with_metaclass
-
-import sys
+from ..stream import Stream
 
 
 class SubCommandMeta(type):
@@ -55,12 +57,24 @@ class EventSubCommand(SubCommand):
                             help="Stream password")
         parser.add_argument('-g', '--generator', dest="generator", default=None,
                             help="Event generator")
-        parser.add_argument('--markup', dest='markup', default='markdown',
+
+        parser.add_argument('-t', '--title', dest="title", required=True,
+                            help="Event title")
+        parser.add_argument('-d', '--description', dest="description",
+                            help="Event description")
+        parser.add_argument('-m', '--markup', dest='markup', default='markdown',
                             help="Markup to use for text")
-        parser.add_argument('--image', dest="image",
-                            help="Path to image file")
-        parser.add_argument('--delay', dest="delay", type=int, default=0,
-                            help="Delay in taking screenshot")
+
+    @property
+    def stream(self):
+        if getattr(self, '_stream', None):
+            return self._stream
+
+        args = self.args
+        stream = Stream(id=args.id or os.environ.get('INTHING_STREAM', None),
+                        password=args.password or os.environ.get('INTHING_STREAM_PASSWORD', None),
+                        generator=args.generator)
+        return stream
 
     def on_result(self, result):
         #print(result)
