@@ -33,9 +33,6 @@ setup(
             'inthing = inthing.command.app:main',
         ]
     },
-    # scripts=[
-    #     'scripts/moya-workon',
-    # ],
     platforms=['any'],
     packages=find_packages(),
     include_package_data=True,

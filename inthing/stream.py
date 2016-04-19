@@ -130,7 +130,7 @@ class Stream(object):
         if status == 'ratelimited':
             raise errors.RateLimited(msg)
 
-        raise errors.EventError(msg)
+        raise errors.EventCreateError(result)
 
     def text(self, text, title="Text", markup="markdown"):
         """Add a text event."""

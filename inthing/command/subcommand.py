@@ -77,7 +77,6 @@ class EventSubCommand(SubCommand):
         return stream
 
     def on_result(self, result):
-        #print(result)
         if result.get('status') == 'fail':
             sys.stderr.write(result.get('msg') + '\n')
             for field, errors in result.get('field_errors', {}).items():

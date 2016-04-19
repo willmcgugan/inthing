@@ -61,7 +61,10 @@ class Inthing(object):
                 import traceback
                 traceback.print_exc(e)
             else:
-                sys.stderr.write("{}\n".format(text_type(e)))
+                if hasattr(e, 'print_error'):
+                    e.print_error()
+                else:
+                    sys.stderr.write("{}\n".format(text_type(e)))
             return -1
 
     def error(self, msg):
