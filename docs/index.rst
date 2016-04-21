@@ -14,9 +14,10 @@ Contents:
    :maxdepth: 2
 
    introduction.rst
+   streams.rst
 
-.. automodule:: inthing
-   :members:
+   code.rst
+
 
 
 Indices and tables
