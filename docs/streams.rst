@@ -9,6 +9,7 @@ Creating Stream Objects
 
 To create a stream object, pass in the URL of the stream as to the Stream constructor as follows::
 
+>>> from inthing import Stream
 >>> my_stream = Stream('http://www.inthing.io/will/test/')
 
 Most streams will be protected with a password, which you can pass in with the `password` parameter:
@@ -42,3 +43,19 @@ Stream objects have the following attributes:
 * ``stream.url`` The full URL to the stream
 * ``stream.id`` The ID of the stream
 
+Posting Events
+--------------
+
+You can post an event to your stream with one of the following methods:
+
+* :func:`inthing.Stream.code`
+* :func:`inthing.Stream.text`
+* :func:`inthing.Stream.image`
+* :func:`inthing.Stream.screenshot`
+
+On success you will get back a :class:`inthing.AddEventResult` object, which contains a ``url`` attribute, and a :func:`inthing.AddEventResult.browse` method which will open a browser at the event url.
+
+Here is a very simple (if a little silly) example that creates a new stream, posts a text event, then opens a browser at the event URL:
+
+>>> from inthing import Stream
+>>> Stream.new().text('Hello, World!').browse()

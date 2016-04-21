@@ -28,15 +28,19 @@ from .jsonrpc import JSONRPCError
 import requests
 
 
-class EventResult(object):
-    """A succesfully posted event."""
+class AddEventResult(object):
+    """Represents a successfully posted event.
+
+    The ``url`` attribute contains the URL to the the event's page.
+
+    """
 
     def __init__(self, url):
         self.url = url
 
     def __repr__(self):
         """Summary with url."""
-        return "<event '{}''>".format(self.url)
+        return "AddEventResult('{}')".format(self.url)
 
     def browse(self):
         """Browse to the event."""
@@ -160,7 +164,7 @@ class Stream(object):
         status = result.get('status', '')
 
         if status == 'ok':
-            return EventResult(result['event']['url'])
+            return AddEventResult(result['event']['url'])
 
         msg = result.get('msg', 'event error')
         if status == 'ratelimited':
@@ -179,7 +183,7 @@ class Stream(object):
         :type text: str
         :param title: The title of the event
         :type title: str
-        :rtype: EventResult
+        :rtype: AddEventResult
 
         """
         event = Event(type="text",
@@ -207,7 +211,7 @@ class Stream(object):
         :type title: str
         :param markup: Markup type for the description.
         :type markup: str
-        :rtype: EventResult
+        :rtype: AddEventResult
 
 
         """
@@ -232,7 +236,7 @@ class Stream(object):
         :type title: str
         :param markup: Markup used to render description.
         :type markup: str
-        :rtype: EventResult
+        :rtype: AddEventResult
 
         """
         event = Event(type="image",
