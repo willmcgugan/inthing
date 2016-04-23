@@ -1,4 +1,8 @@
-"""Exceptions raised by inthing module."""
+"""
+Inthing Exceptions
+==================
+
+"""
 
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -7,7 +11,7 @@ import sys
 
 
 class StreamError(Exception):
-    """An error occured when working with a stream."""
+    """Base class for inthing Stream related errors."""
 
 
 class ConnectivityError(StreamError):
@@ -38,4 +42,4 @@ class EventFail(EventError):
 
 
 class RateLimited(EventError):
-    """"Events are being posted to fast."""
+    """Events are being posted to fast."""
