@@ -67,3 +67,12 @@ The following public methods on stream objects are devoted to posting various ki
 * :func:`inthing.Stream.screenshot`
 
 See :ref:`events` for details.
+
+Rate Limiting
+-------------
+
+The Inthing.io server imposes a *rate limit* on requests; if you add events too rapidly, the Stream object will throw a `inthing.errors.RateLimited` exception for new events. If this happens, you can wait a while and try again.
+
+This is just a precaution against errors in your script (or malicious code) from overloading the server. The rate limit is high enough that you are unlikely to reach it with functioning code. The server allows for *bursts* of events as long as the number of events averages out within a longer period.
+
+The exact limits are subject to change, but as a general rule, if events are being posted too fast for an average human to read, you may be posting too fast!

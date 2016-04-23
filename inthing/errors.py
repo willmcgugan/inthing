@@ -1,30 +1,33 @@
-from __future__ import unicode_literals
+"""Exceptions raised by inthing module."""
+
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import sys
 
+
 class StreamError(Exception):
-    pass
+    """An error occured when working with a stream."""
 
 
-class ConnectivityError(Exception):
-    pass
+class ConnectivityError(StreamError):
+    """There was an issue reaching the server."""
 
 
-class BadResponse(Exception):
-    pass
+class BadResponse(StreamError):
+    """The server returned an unexpected response."""
 
 
-class EventError(Exception):
-    """An error relating to an event"""
+class EventError(StreamError):
+    """An error relating to an attempt to post an event."""
 
 
-class EventCreateError(Exception):
-    """An error relating to an event"""
+class EventFail(EventError):
+    """The event contained invalid information."""
 
     def __init__(self, result):
         self.result = result
-        super(EventCreateError, self).__init__(result.get('msg', 'event failed to validate'))
+        super(EventFail, self).__init__(result.get('msg', 'event failed to validate'))
 
     def print_error(self):
         result = self.result
@@ -35,4 +38,4 @@ class EventCreateError(Exception):
 
 
 class RateLimited(EventError):
-    """"Server has imposed a limit"""
+    """"Events are being posted to fast."""

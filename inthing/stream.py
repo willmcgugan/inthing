@@ -50,7 +50,8 @@ class Result(object):
 class Stream(object):
     """Inthing Stream class interface.
 
-    This class is the main interface for posting to an Inthing Stream. It represents a single Stream, and has methods to post the various event types.
+    This class is the main interface for posting to an Inthing Stream. It represents a single
+    Stream, and has methods to post the various event types.
 
     """
 
@@ -94,8 +95,9 @@ class Stream(object):
         """
         Create a new unclaimed stream.
 
-        An *unclaimed* stream functions just like any other stream, but is not owned by any user,
-        and has no password set. Anyone may post events to an unclaimed stream, but in practice they are private as long as you don't give away the ID.
+        An *unclaimed* stream functions like any other stream, but is not owned by any user,
+        and has no password set. Anyone may post events to an unclaimed stream, but in practice
+        they are private as long as you don't give away the ID or URL.
 
         :rtype Stream:
 
@@ -171,7 +173,7 @@ class Stream(object):
         if status == 'ratelimited':
             raise errors.RateLimited(msg)
 
-        raise errors.EventCreateError(result)
+        raise errors.EventFail(result)
 
     def text(self, text, title="Text", markup="markdown"):
         """Add a text event to this stream.
