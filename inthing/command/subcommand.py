@@ -58,12 +58,16 @@ class EventSubCommand(SubCommand):
         parser.add_argument('-g', '--generator', dest="generator", default=None,
                             help="Event generator")
 
-        parser.add_argument('-t', '--title', dest="title", required=True,
+        parser.add_argument('-t', '--title', dest="title", default=None,
                             help="Event title")
         parser.add_argument('-d', '--description', dest="description",
                             help="Event description")
         parser.add_argument('-m', '--markup', dest='markup', default='markdown',
                             help="Markup to use for text")
+        parser.add_argument('-b', '--browser', dest="browse", action="store_true",
+                            help="Open a browser at the new event URL")
+        parser.add_argument('-u', '--url', dest="url", action="store_true",
+                            help="Display event URL")
 
     @property
     def stream(self):
@@ -76,8 +80,9 @@ class EventSubCommand(SubCommand):
                         generator=args.generator)
         return stream
 
-    def on_result(self, result):
-        if result.get('status') == 'fail':
-            sys.stderr.write(result.get('msg') + '\n')
-            for field, errors in result.get('field_errors', {}).items():
-                sys.stderr.write(" * {} - {}\n".format(field, ', '.join(errors)))
+    def run(self):
+        result = self.run_event()
+        if self.args.browse:
+            result.browse()
+        if self.args.url:
+            print(result.url)

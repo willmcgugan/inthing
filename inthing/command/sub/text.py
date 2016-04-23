@@ -12,9 +12,9 @@ class Text(EventSubCommand):
         parser.add_argument(dest="text",
                             help="Event text")
 
-    def run(self):
+    def run_event(self):
         args = self.args
-
         result = self.stream.text(args.text,
-                                  title=args.title,
+                                  title=args.title or 'Text',
                                   markup=args.markup)
+        return result

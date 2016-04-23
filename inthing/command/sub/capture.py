@@ -6,7 +6,7 @@ import sys
 
 from ..subcommand import EventSubCommand
 
-from inthing.stream import Stream
+from inthing import Stream, Event
 
 
 class Capture(EventSubCommand):
@@ -19,7 +19,7 @@ class Capture(EventSubCommand):
         parser.add_argument('-l', '--language', dest="language", required=False,
                             help="Programming language (if catting code)")
 
-    def run(self):
+    def run_event(self):
         args = self.args
 
         stream = Stream(id=args.id,
@@ -42,7 +42,11 @@ class Capture(EventSubCommand):
             encoding = sys.stdin.encoding or locale.getdefaultlocale()[1]
             text = text.decode(encoding, 'replace')
 
-        result = stream.text(text,
-                             type="code",
-                             code_language=args.language,
-                             title=args.title or "Capture")
+        event = Event(type="code",
+                      title=args.title or 'Capture Event',
+                      markup=args.markup,
+                      description=args.description,
+                      text=text)
+
+        result = stream.add_event(event)
+        return result

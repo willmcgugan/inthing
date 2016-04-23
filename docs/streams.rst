@@ -13,11 +13,13 @@ Creating Stream Objects
 To create a stream object for an existing stream, pass in the URL of the stream as to the Stream constructor as follows::
 
 >>> from inthing import Stream
->>> my_stream = Stream('http://www.inthing.io/will/test/')
+>>> my_stream = Stream('https://www.inthing.io/will/test/')
+
+.. note:: You can drop the ``https://www.inthing.io/`` part and just use ``/will/test/`` if you prefer.
 
 Most streams will be protected with a password, which you can pass in with the `password` parameter:
 
->>> my_stream = Stream('http://www.inthing.io/will/test/', password="daffodil")
+>>> my_stream = Stream('https://www.inthing.io/will/test/', password="daffodil")
 
 You can also use the stream's UUID (universal unique identifier) in place of a URL. The advantage of using a UUID over a URL is that the UUID will never change, but the URL could change if you edit the Stream's title. Here's an example of creating a stream object from its UUID::
 
@@ -28,7 +30,7 @@ You can also omit the stream ID / URL and password entirely, if you store the st
 For example, in Linux and OSX, you can do the following from the terminal::
 
     export INTHING_STREAM=4d9f242c-0805-11e6-8d28-fb90f1f704e0
-    export INTHING_PASSWORD=daffodil
+    export INTHING_STREAM_PASSWORD=daffodil
 
 Then in Python, you can create a stream object as follows::
 

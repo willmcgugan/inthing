@@ -14,10 +14,10 @@ class Screenshot(EventSubCommand):
         parser.add_argument('--delay', dest="delay", type=int, default=0,
                             help="Delay in taking screenshot")
 
-    def run(self):
+    def run_event(self):
         args = self.args
-
         result = self.stream.screenshot(text=args.description,
-                                        title=args.title,
+                                        title=args.title or 'Screenshot',
                                         markup=args.markup,
                                         delay=args.delay)
+        return result

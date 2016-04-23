@@ -130,8 +130,13 @@ class Stream(object):
         self.url = result['url']
         self.password = password
 
-    def _add_event(self, event):
-        """Add an event."""
+    def add_event(self, event):
+        """Add an event.
+
+        :param event: Event you want to add.
+        :type event: Event
+
+        """
         post_args = {}
         if event.images:
             path = event.images[0]
@@ -193,7 +198,7 @@ class Stream(object):
                       title=title,
                       description=text,
                       markup=markup)
-        result = self._add_event(event)
+        result = self.add_event(event)
         return result
 
     def code(self, code, language=None, description=None, title="Code", markup="markdown"):
@@ -223,12 +228,14 @@ class Stream(object):
         else:
             with open(code, 'rt') as code_file:
                 code = code_file.read()
+        if isinstance(code, bytes):
+            code = code.decode('utf-8', 'replace')
         event = Event(type="code",
                       title=title,
                       markup=markup,
                       description=description,
                       text=code)
-        result = self._add_event(event)
+        result = self.add_event(event)
         return result
 
     def image(self, path, description=None, title="New Photo", markup="markdown"):
@@ -250,7 +257,7 @@ class Stream(object):
                       description=description,
                       markup=markup)
         event.add_image(path)
-        result = self._add_event(event)
+        result = self.add_event(event)
         return result
 
     def screenshot(self, delay=0, description=None, title="New Screenshot", markup="markdown"):
@@ -274,5 +281,5 @@ class Stream(object):
         pyscreenshot.grab_to_file(filename)
         event = Event(type="screenshot", title=title, description=description, markup=markup)
         event.add_image(filename)
-        result = self._add_event(event)
+        result = self.add_event(event)
         return result
