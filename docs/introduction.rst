@@ -3,13 +3,21 @@ Introduction
 
 Inthing is a Python module for `<https://inthing.io>`_.
 
-Inthing users can create *streams* which are much like a social media timeline, and post *events* containing anything from rich-media to simple text. The streams are *realtime*, in that a new event will appear virtually instantaneously and without a page refresh.
+Inthing users create *streams* of *events*, which are much like a social media timelines in that they can contain text, rich-media, comments etc, but unlike social media they are intended primarily for machines to post to via a easy to use API.
 
-How a stream is used and what kind of events are posted to it is entirely up to the developer. It can be used for something as sophisticated as a motion activated camera, or as simple as a one-liner to send a text notification.
+How a stream is used and what kind of events are posted to it is entirely up to the developer. It can be used for something as sophisticated as a motion activated camera, or as simple as a one-liner to send a text notification. Events are realtime and will appear instantly on the page without a refresh. Events can be easily shared on social media and commented on.
 
 Getting Started
 ---------------
 
+Use PIP to install the Python module::
 
+    pip install inthing
 
+You may need to prefix that with ``sudo`` on some systems.
 
+This will install the ``inthing`` Python module, and also the ``inthing`` command line app. Run the following from the command line to check instalation::
+
+    inthing -v
+
+You will probably also want to create an inthing.io account, which you can do by visiting `<https://inthing.io>`_. Creating an account is *not* a requirement, but it will give you more control over streams, and the ability to password protect a stream.
