@@ -28,7 +28,7 @@ from .jsonrpc import JSONRPCError
 import requests
 
 
-class AddEventResult(object):
+class Result(object):
     """Represents a successfully posted event.
 
     The ``url`` attribute contains the URL to the the event's page.
@@ -40,10 +40,10 @@ class AddEventResult(object):
 
     def __repr__(self):
         """Summary with url."""
-        return "AddEventResult('{}')".format(self.url)
+        return "Result('{}')".format(self.url)
 
     def browse(self):
-        """Browse to the event."""
+        """Open a webbrowser at this event."""
         webbrowser.open(self.url)
 
 
@@ -65,7 +65,7 @@ class Stream(object):
         :type password: str
         :param generator: A short string to identify what has created this
         :type generator: str
-        :rtype: Stream instance
+        :rtype: Stream
 
         """
         self.rpc = get_interface()
@@ -94,9 +94,10 @@ class Stream(object):
         """
         Create a new unclaimed stream.
 
-        An *unclaimed* stream functions just like any other stream, but is not owned by any user, and has no password set. Anyone may post events to an unclaimed stream, but in practice they are private as long as you don't give away the ID.
+        An *unclaimed* stream functions just like any other stream, but is not owned by any user,
+        and has no password set. Anyone may post events to an unclaimed stream, but in practice they are private as long as you don't give away the ID.
 
-        :rtype: Stream instance
+        :rtype Stream:
 
         >>> my_stream = Stream.new()
         >>> my_stream.text('I just create a new stream!')
@@ -164,7 +165,7 @@ class Stream(object):
         status = result.get('status', '')
 
         if status == 'ok':
-            return AddEventResult(result['event']['url'])
+            return Result(result['event']['url'])
 
         msg = result.get('msg', 'event error')
         if status == 'ratelimited':
@@ -183,7 +184,7 @@ class Stream(object):
         :type text: str
         :param title: The title of the event
         :type title: str
-        :rtype: AddEventResult
+        :rtype: Result
 
         """
         event = Event(type="text",
@@ -201,7 +202,7 @@ class Stream(object):
             with open('example.py') as code_file:
                 stream.code(code_file, language="Python")
 
-        :param code: Source code in a string, or an open file like object
+        :param code: Path to a file containing code, or an open file object
         :type code: str or open object
         :param langauge: Programming language.
         :type language: str
@@ -211,12 +212,15 @@ class Stream(object):
         :type title: str
         :param markup: Markup type for the description.
         :type markup: str
-        :rtype: AddEventResult
+        :rtype: Result
 
 
         """
         if hasattr(code, 'read'):
             code = code.read()
+        else:
+            with open(code, 'rt') as code_file:
+                code = code_file.read()
         event = Event(type="code",
                       title=title,
                       markup=markup,
@@ -236,7 +240,7 @@ class Stream(object):
         :type title: str
         :param markup: Markup used to render description.
         :type markup: str
-        :rtype: AddEventResult
+        :rtype: Result
 
         """
         event = Event(type="image",
@@ -257,8 +261,8 @@ class Stream(object):
         :param title: Title of the event.
         :type title: str
         :param markup: Markup of the description.
-        :type markip: str
-        :rtype EventType"
+        :type markup: str
+        :rtype: Result
 
         """
         if delay:

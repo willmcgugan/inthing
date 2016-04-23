@@ -1,5 +1,7 @@
-Stream Objects
-==============
+.. _streams:
+
+Streams
+=======
 
 A stream object is an instance of a :class:`inthing.Stream` and represents a single inthing.io stream.
 
@@ -38,33 +40,30 @@ Environment variables also work with Windows, but the process differs from versi
 Unclaimed Streams
 -----------------
 
-Alternatively you can create a stream object with `Stream.new`, which creates a new stream on the server. Here's an example:
+Alternatively you can create a stream object with :func:`inthing.Stream.new`, which creates a new stream on the server. Here's an example:
 
 >>> my_stream = Stream.new()
 
 Stream objects created in this way are *unclaimed*, in that they aren't owned by anyone. You will not see it in your timeline -- but you may still post as normal to it. If you would like to *claim* the stream, you should visit the URL and click the Claim button. This will attach the stream to your account, and it you can password protect it.
 
-Stream Attributes
+Stream Objects
 -----------------
 
-Stream objects have the following attributes:
+Streams are relatively simple objects. For most applications you will only ever need a single Stream, which you can use to post events from.
 
-* ``stream.url`` The full URL to the stream
-* ``stream.id`` The ID of the stream
+Streams have the following public attributes:
 
-Posting Events
---------------
+* ``stream.generator`` A string the identifies the entitiy creating events. The default value for this is the hostname of the computer it is running on.
+* ``stream.id`` The UUID of the stream.
+* ``stream.url`` The full URL to the stream.
 
-You can post an event to your stream with one of the following methods:
+The :func:`inthing.Stream.browse` method will open a webbrowser the stream page. This does the equivelent of opening a browser and navigating to the URL in ``stream.url``.
+
+The following public methods on stream objects are devoted to posting various kinds of events:
 
 * :func:`inthing.Stream.code`
 * :func:`inthing.Stream.text`
 * :func:`inthing.Stream.image`
 * :func:`inthing.Stream.screenshot`
 
-On success you will get back a :class:`inthing.AddEventResult` object, which contains a ``url`` attribute, and a :func:`inthing.AddEventResult.browse` method which will open a browser at the event url.
-
-Here is a very simple (if a little silly) example that creates a new stream, posts a text event, then opens a browser at the event URL:
-
->>> from inthing import Stream
->>> Stream.new().text('Hello, World!').browse()
+See :ref:`events` for details.

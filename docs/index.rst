@@ -15,6 +15,7 @@ Contents:
 
    introduction.rst
    streams.rst
+   events.rst
 
    code.rst
 
