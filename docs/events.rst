@@ -57,7 +57,7 @@ Image Events
 
 An *image* event contains an image, typically a photo.
 
-Here's how you would post the file ``alien1.jpg``:
+Here's how you would post the file ``alien1.jpg``::
 
     my_stream.image('./alien1.jpg', description="Alien Autopsy!")
 
