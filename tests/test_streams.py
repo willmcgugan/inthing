@@ -6,7 +6,7 @@ import unittest
 
 import mock
 
-from inthing import Result, Stream
+from inthing import Result, Stream, Event
 
 
 class TestResult(unittest.TestCase):
@@ -42,3 +42,13 @@ class TestStream(unittest.TestCase):
         self.assertEqual(stream.id, ret['id'])
         self.assertEqual(stream.password, ret['password'])
         self.assertEqual(stream.url, ret['url'])
+
+    def test_add_text(self):
+        stream = Stream('foo', 'bar')
+        with mock.patch('inthing.Stream.add_event') as add_event:
+            stream.text('this is the text', title="My Text")
+        event = add_event.call_args[0][0]
+        assert isinstance(event, Event), 'must be an Event'
+        self.assertEqual(event.type, 'text')
+        self.assertEqual(event.description, 'this is the text')
+        self.assertEqual(event.title, 'My Text')
