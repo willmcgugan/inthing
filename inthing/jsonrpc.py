@@ -6,13 +6,13 @@ import json
 import requests
 
 
-
 class ProtocolError(Exception):
-    """Errors where the server didn't return the correct response"""
+    """Errors where the server didn't return the correct response."""
 
 
 class JSONRPCError(Exception):
-    """Base class for exceptions returned from the server"""
+    """Base class for exceptions returned from the server."""
+
     def __init__(self, method, code, data, message):
         self.method = method
         self.code = code
@@ -22,15 +22,15 @@ class JSONRPCError(Exception):
 
 
 class RemoteError(JSONRPCError):
-    """One of the generic error types defined in ErrorCode"""
+    """One of the generic error types defined in ErrorCode."""
 
 
 class RemoteMethodError(JSONRPCError):
-    """An error returned from the server"""
+    """An error returned from the server."""
 
 
 class ErrorCode(object):
-    """Enumeration of JSONRPC error codes"""
+    """Enumeration of JSONRPC error codes."""
 
     parse_error = -32700
     invalid_request = -32600
@@ -38,17 +38,17 @@ class ErrorCode(object):
     invalid_params = -32602
     internal_error = -32603
 
-    to_str = {-32700: "Parse error",
-              -32600: "Invalid Request",
-              -32601: "Method not found",
-              -32602: "Invalid params",
-              -32603: "Internal error"}
+    to_str = {parse_error: "Parse error",
+              invalid_request: "Invalid Request",
+              method_not_found: "Method not found",
+              invalid_params: "Invalid params",
+              internal_error: "Internal error"}
 
 
 class Batch(object):
-    """An object that stores a batch of rpc calls
+    """An object that stores a batch of rpc calls.
 
-    May be used as a context manager
+    May be used as a context manager::
 
         with client.batch() as batch:
             batch.call("method1", foo="bar")
@@ -78,7 +78,7 @@ class Batch(object):
             self.send()
 
     def call(self, method, **params):
-        """Add a call to the batch, using a default id"""
+        """Add a call to the batch, using a default id."""
         call = {
             "jsonrpc": "2.0",
             "method": method,
@@ -89,7 +89,7 @@ class Batch(object):
         self.methods[call['id']] = method
 
     def call_with_id(self, call_id, method, **params):
-        """Add a call to the batch with a supplied id"""
+        """Add a call to the batch with a supplied id."""
         if call_id in self.ids_used:
             raise ValueError("duplicate call id in batch")
         call = {
@@ -124,7 +124,7 @@ class Batch(object):
         self.results = {r['id']: r for r in response if 'id' in r and 'error' not in r}
 
     def get_result(self, call_id, default=Ellipsis):
-        """Get a result from the batch, potentially raising rpc errors"""
+        """Get a result from the batch, potentially raising rpc errors."""
         if call_id in self.results:
             return self.results[call_id].get('result', None)
         elif call_id in self.errors:
@@ -137,7 +137,7 @@ class Batch(object):
 
 
 class JSONRPC(object):
-    """A client for a JSONRPC server"""
+    """A client for a JSONRPC server."""
 
     unknown_error_msg = "the server did not supply further information"
 
@@ -156,7 +156,7 @@ class JSONRPC(object):
         return response_json
 
     def call(self, method, **params):
-        """Call a remote method"""
+        """Call a remote method."""
         call_id = self.new_call_id()
         call = {
             "jsonrpc": "2.0",
@@ -182,7 +182,7 @@ class JSONRPC(object):
         return response.get('result', None)
 
     def notify(self, method, **params):
-        """Send a notification to the server"""
+        """Send a notification to the server."""
         notify = {
             "jsonrpc": "2.0",
             "method": method,
@@ -191,7 +191,7 @@ class JSONRPC(object):
         self._send(notify)
 
     def batch(self):
-        """Create a batch object that can be used to send multiple calls / notifications"""
+        """Create a batch object that can be used to send multiple calls / notifications."""
         return Batch(self)
 
     def _handle_error(self, method, error):
@@ -205,22 +205,3 @@ class JSONRPC(object):
                                 code,
                                 error.get('data', None),
                                 error.get('message', self.unknown_error_msg))
-
-
-# class WSJSONRPC(JSONRPC):
-#     """An interface to an JSONRPC server proxied over a websocket"""
-
-#     def __init__(self, api_url="ws://127.0.0.1:7474/api/"):
-#         self.api_url = api_url
-#         self.call_id = 0
-#         self.ws = websocket.create_connection(self.api_url)
-
-#     def on_close(self):
-#         pass
-
-#     def _send(self, call):
-#         call_json = json.dumps(call)
-#         self.ws.send(call_json)
-#         response_json = self.ws.recv()
-#         response = json.loads(response_json)
-#         return response
