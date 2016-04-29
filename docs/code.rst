@@ -1,3 +1,6 @@
+Code
+====
+
 .. automodule:: inthing
     :members:
 

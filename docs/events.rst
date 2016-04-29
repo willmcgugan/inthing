@@ -3,9 +3,9 @@
 Events
 ======
 
-Inthing supports a variety of event types, and more are being added. Most of them have common fields; for instance all events will have a ``title`` and probably a ``description``.
+Inthing supports a variety of **event types**, which display different kinds of information (text, code, images etc) on your stream.
 
-When you successfully post an event (with one of the event methods below), you will get back a :class:`inthing.Result` object, which contains a ``url`` attribute, and a :func:`inthing.Result.browse` method which will open a browser at the event url.
+When you successfully post an event with one of the methods in :class:`inthing.Stream`, you will get back a :class:`inthing.Result` object, which contains a ``url`` attribute, and a :func:`inthing.Result.browse` method.
 
 Here's an example of using the ``Result`` object::
 
@@ -14,6 +14,8 @@ Here's an example of using the ``Result`` object::
     result = stream.text('my first event!')
     print("opening {}".format(result.url))
     result.browse()
+
+See :doc:`eventtypes` for a description of the event types.
 
 Priorities
 ----------
@@ -39,81 +41,51 @@ Most events will have a description field. You can set how the description shoul
 
 .. table:: Supported markups
 
-   ======    ==================================================
+   ========  ==================================================
    Markup    Meaning
-   ======    ==================================================
+   ========  ==================================================
    text      Simple text
    markdown  `Markdown <http://commonmark.org/>`_.
    html      Simple HTML
    bbcode    `BBCode <https://en.wikipedia.org/wiki/BBCode>`_.
-   ======    ==================================================
+   ========  ==================================================
 
 .. note:: Inthing.io will strip descriptions of potentially dangerous markup, such as <script> tags.
 
 
-Event Types
-=============
-
-See the following for the events types you can post to a stream.
-
-Text
+Demo
 ----
 
-A *text* event may contain text for pretty much any purpose.
+Here's a very simple example that generates an ascii mandlebrot set and posts it to a new Inthing stream::
 
-The following is an example that posts text messages to a stream (Ctrl+C to exit)::
+# demo.py
+"""An example of posting a text event to a stream."""
 
-    from inthing import Stream
-    stream = Stream.new()
-    stream.browse()
-    while 1:
-        stream.text(raw_input('type something: '))
-
-You could adapt this quite easily to create a realtime chat system on the web.
-
-The ``text`` method also has a ``markup`` parameter which sets the markup for the text. By default it is `markdown <http://commonmark.org/help/>`_, which means you can easily insert formatting. Here's an example::
-
-    stream.text('**Bold** and *italic*')
-
-You can also set the ``markup`` parameter to ``text``, ``bbcode`` or ``html``. But note that Inthing.io will strip out any potentially dangerous HTML markup (so no script tags)!
-
-See :func:`inthing.Stream.screenshot` for details.
+from inthing import Stream
 
 
-Code
-----
-
-A *code* event contains source code which you can share and comment on. If you have a piece of code you are particularily proud of, you can post it to Inthing.io. It will be nicely syntax highlighted. A variety of languages are supported.
-
-Here's how you might post source code to a stream::
-
-    with open('cool.py') as code_file:
-        my_stream.code(code_file, language="python", title="I wrote cool.py")
-
-See :func:`inthing.Stream.code` for details.
-
-
-Image
------
-
-An *image* event contains an image, typically a photo.
-
-Here's how you would post the file ``alien1.jpg``::
-
-    my_stream.image('./alien1.jpg', description="Alien Autopsy!")
-
-See :func:`inthing.Stream.image` for details.
+def mandel(xsize=80, ysize=20, max_iteration=50):
+    """Render an ascii mandelbrot set!"""
+    chars = " .,~:;+*%@##"
+    rows = []
+    for pixy in xrange(ysize):
+        y0 = (float(pixy) / ysize) * 2 - 1
+        row = ""
+        for pixx in xrange(xsize):
+            x0 = (float(pixx) / xsize) * 3 - 2
+            x = 0
+            y = 0
+            iteration = 0
+            while (x * x + y * y < 4) and iteration < max_iteration:
+                xtemp = x * x - y * y + x0
+                y = 2 * x * y + y0
+                x = xtemp
+                iteration += 1
+            row += chars[iteration % 10]
+        rows.append(row)
+    return "```\n{}\n```\n#mandlebrot".format('\n'.join(rows))
 
 
-Screenshot
-----------
-
-A *screenshot* event is a special kind of image event that contains a screenshot. Calling :func:`inthing.Stream.screenshot` will capture a screenshot of your desktop and add the event to your Stream.
-
-Here's how you would upload a screenshot after 5 seconds:
-
-    my_stream.screenshot(self, delay=5, title="My Desktop!")
-
-.. warning:: Be careful with this event, you wouldn't want to screenshot any passwords or nuclear launch codes!
-
-See :func:`inthing.Stream.screenshot` for details.
+stream = Stream.new()
+result = stream.text(mandel(), title="Mandelbrot Set!")
+result.browse()
