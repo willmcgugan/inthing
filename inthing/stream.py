@@ -193,7 +193,8 @@ class Stream(object):
         event = Event(type="text",
                       title=title,
                       description=text,
-                      markup=markup)
+                      markup=markup,
+                      priority=priority)
         result = self.add_event(event)
         return result
 
