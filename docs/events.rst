@@ -20,28 +20,32 @@ Priorities
 
 Events have an associated priority value which is an integer between -2 and +2 (inclusive).
 
-===== =======
-Value Meaning
-===== =======
-+2    Urgent
-+1    Important (of greater than normal signficance)
- 0    Normal priority (default)
--1    Informative
--2    Verbose
-===== ======
+.. table:: Priority values
+
+   ===== =======
+   Value Meaning
+   ===== =======
+   +2    Urgent
+   +1    Important (of greater than normal signficance)
+    0    Normal priority (default)
+   -1    Informative
+   -2    Verbose
+   ===== ======
 
 Markup
-======
+------
 
 Most events will have a description field. You can set how the description should be displayed via the `markup` parameter.
 
-======    =======
-Markup    Meaning
-======    =======
-text      Simple text
-markdown  `Markdown <http://commonmark.org/>`_.
-html      Simple HTML
-bbcode    `BBCode <https://en.wikipedia.org/wiki/BBCode>`_.
+.. table:: Supported markups
+
+   ======    =======
+   Markup    Meaning
+   ======    =======
+   text      Simple text
+   markdown  `Markdown <http://commonmark.org/>`_.
+   html      Simple HTML
+   bbcode    `BBCode <https://en.wikipedia.org/wiki/BBCode>`_.
 
 .. note:: Inthing.io will strip descriptions of potentially dangerous markup, such as <script> tags.
 
@@ -49,7 +53,7 @@ bbcode    `BBCode <https://en.wikipedia.org/wiki/BBCode>`_.
 Event Types
 =============
 
-The following
+See the following for the events types you can post to a stram.
 
 Text
 ----
