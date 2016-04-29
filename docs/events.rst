@@ -15,8 +15,44 @@ Here's an example of using the ``Result`` object::
     print("opening {}".format(result.url))
     result.browse()
 
-Text Events
------------
+Priorities
+----------
+
+Events have an associated priority value which is an integer between -2 and +2 (inclusive).
+
+===== =======
+Value Meaning
+===== =======
++2    Urgent
++1    Important (of greater than normal signficance)
+ 0    Normal priority (default)
+-1    Informative
+-2    Verbose
+===== ======
+
+Markup
+======
+
+Most events will have a description field. You can set how the description should be displayed via the `markup` parameter.
+
+======    =======
+Markup    Meaning
+======    =======
+text      Simple text
+markdown  `Markdown <http://commonmark.org/>`_.
+html      Simple HTML
+bbcode    `BBCode <https://en.wikipedia.org/wiki/BBCode>`_.
+
+.. note:: Inthing.io will strip descriptions of potentially dangerous markup, such as <script> tags.
+
+
+Event Types
+=============
+
+The following
+
+Text
+----
 
 A *text* event may contain text for pretty much any purpose.
 
@@ -39,8 +75,8 @@ You can also set the ``markup`` parameter to ``text``, ``bbcode`` or ``html``. B
 See :func:`inthing.Stream.screenshot` for details.
 
 
-Code Events
------------
+Code
+----
 
 A *code* event contains source code which you can share and comment on. If you have a piece of code you are particularily proud of, you can post it to Inthing.io. It will be nicely syntax highlighted. A variety of languages are supported.
 
@@ -52,8 +88,8 @@ Here's how you might post source code to a stream::
 See :func:`inthing.Stream.code` for details.
 
 
-Image Events
-------------
+Image
+-----
 
 An *image* event contains an image, typically a photo.
 
@@ -64,8 +100,8 @@ Here's how you would post the file ``alien1.jpg``::
 See :func:`inthing.Stream.image` for details.
 
 
-Screenshot Event
-----------------
+Screenshot
+----------
 
 A *screenshot* event is a special kind of image event that contains a screenshot. Calling :func:`inthing.Stream.screenshot` will capture a screenshot of your desktop and add the event to your Stream.
 

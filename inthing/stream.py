@@ -180,7 +180,11 @@ class Stream(object):
 
         raise errors.EventFail(result)
 
-    def text(self, text, title="Text", markup="markdown"):
+    def text(self,
+             text,
+             title="Text",
+             markup="markdown",
+             priority=0):
         """Add a text event to this stream.
 
         >>> my_stream = Stream.new()
@@ -201,7 +205,13 @@ class Stream(object):
         result = self.add_event(event)
         return result
 
-    def code(self, code, language=None, description=None, title="Code", markup="markdown"):
+    def code(self,
+             code,
+             language=None,
+             description=None,
+             title="Code",
+             markup="markdown",
+             priority=0):
         """Add a (source) code event.
 
         .. code-block:: python
@@ -234,11 +244,18 @@ class Stream(object):
                       title=title,
                       markup=markup,
                       description=description,
-                      text=code)
+                      text=code,
+                      code_language=language,
+                      priority=priority)
         result = self.add_event(event)
         return result
 
-    def image(self, path, description=None, title="New Photo", markup="markdown"):
+    def image(self,
+              path,
+              description=None,
+              title="New Photo",
+              markup="markdown",
+              priority=0):
         """Add an image event.
 
         :param path: A path to a JPG or PNG.
@@ -255,12 +272,18 @@ class Stream(object):
         event = Event(type="image",
                       title=title,
                       description=description,
-                      markup=markup)
+                      markup=markup,
+                      priority=priority)
         event.add_image(path)
         result = self.add_event(event)
         return result
 
-    def screenshot(self, delay=0, description=None, title="New Screenshot", markup="markdown"):
+    def screenshot(self,
+                   delay=0,
+                   description=None,
+                   title="New Screenshot",
+                   markup="markdown",
+                   priority=0):
         """Take a screenshot and post an event.
 
         :param delay: Number of seconds to wait before taking the screenshot.
@@ -279,7 +302,11 @@ class Stream(object):
         import pyscreenshot
         filename = tempfile.mktemp(prefix='inthing', suffix=".jpg")
         pyscreenshot.grab_to_file(filename)
-        event = Event(type="screenshot", title=title, description=description, markup=markup)
+        event = Event(type="screenshot",
+                      title=title,
+                      description=description,
+                      markup=markup,
+                      priority=piority)
         event.add_image(filename)
         result = self.add_event(event)
         return result

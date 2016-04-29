@@ -34,11 +34,12 @@ class EventFail(EventError):
         super(EventFail, self).__init__(result.get('msg', 'event failed to validate'))
 
     def print_error(self):
+        """Print error details to stderr."""
         result = self.result
         if result.get('status') == 'fail':
             sys.stderr.write(result.get('msg') + '\n')
             for field, errors in result.get('field_errors', {}).items():
-                sys.stderr.write(" * {} - {}\n".format(field, ', '.join(errors)))
+                sys.stderr.write(" * {0} - {1}\n".format(field, ', '.join(errors)))
 
 
 class RateLimited(EventError):

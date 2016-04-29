@@ -40,7 +40,7 @@ class SubCommandType(object):
             self.error(msg)
         sys.exit(code)
 
-    def run():
+    def run(self):
         pass
 
 

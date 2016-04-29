@@ -13,6 +13,7 @@ from .. import __version__ as version
 
 
 class Inthing(object):
+    """inthing command line app."""
 
     def __init__(self):
         self.subcommands = {}

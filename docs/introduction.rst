@@ -20,4 +20,4 @@ This will install the ``inthing`` Python module, and also the ``inthing`` comman
 
     inthing -v
 
-You will probably also want to create an inthing.io account, which you can do by visiting `<https://inthing.io>`_. Creating an account is *not* a requirement, but it will give you more control over streams, and the ability to password protect a stream.
+You will probably also want to create an inthing.io account, which you can do by visiting `<https://inthing.io>`_. Creating an account is *not* a requirement, but will give you more control over your streams.
