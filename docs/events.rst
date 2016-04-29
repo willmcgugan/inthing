@@ -22,15 +22,15 @@ Events have an associated priority value which is an integer between -2 and +2 (
 
 .. table:: Priority values
 
-   ===== =======
+   ===== ==============================================
    Value Meaning
-   ===== =======
+   ===== ==============================================
    +2    Urgent
    +1    Important (of greater than normal signficance)
-    0    Normal priority (default)
+   0     Normal priority (default)
    -1    Informative
    -2    Verbose
-   ===== ======
+   ===== ==============================================
 
 Markup
 ------
@@ -39,13 +39,14 @@ Most events will have a description field. You can set how the description shoul
 
 .. table:: Supported markups
 
-   ======    =======
+   ======    ==================================================
    Markup    Meaning
-   ======    =======
+   ======    ==================================================
    text      Simple text
    markdown  `Markdown <http://commonmark.org/>`_.
    html      Simple HTML
    bbcode    `BBCode <https://en.wikipedia.org/wiki/BBCode>`_.
+   ======    ==================================================
 
 .. note:: Inthing.io will strip descriptions of potentially dangerous markup, such as <script> tags.
 
@@ -53,7 +54,7 @@ Most events will have a description field. You can set how the description shoul
 Event Types
 =============
 
-See the following for the events types you can post to a stram.
+See the following for the events types you can post to a stream.
 
 Text
 ----
