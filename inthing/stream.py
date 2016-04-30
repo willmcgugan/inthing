@@ -1,7 +1,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import json
 import logging
 import mimetypes
 import os
@@ -244,7 +243,7 @@ class Stream(object):
                 raise errors.ConnectivityError("unable to contact server")
 
             try:
-                result = json.loads(response.content)
+                result = response.json()
             except Exception as e:
                 raise errors.BadResponse('unable to decode response from server ({})'.format(e))
 
