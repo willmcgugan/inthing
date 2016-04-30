@@ -65,10 +65,11 @@ class _FileCaptureProxy(object):
 class CaptureContext(object):
     """Context manager to capture stdout/stderr."""
 
-    def __init__(self, stream, title, description=None, stdout=True, stderr=True):
+    def __init__(self, stream, title, description=None, browse=False, stdout=True, stderr=True):
         self.stream = stream
         self.title = title
         self.description = None
+        self.browse = browse
         self.result = None
 
         self._capture_stdout = stdout
@@ -97,6 +98,8 @@ class CaptureContext(object):
                       title=self.title,
                       text=output)
         self.result = self.stream.add_event(event)
+        if self.browse:
+            self.result.browse()
 
 
 class Stream(object):
@@ -172,13 +175,15 @@ class Stream(object):
         """Open this stream in your browser."""
         webbrowser.open(self.url)
 
-    def capture(self, title, description=None, stdout=True, stderr=False):
+    def capture(self, title="Captured output", description=None, browse=False, stdout=True, stderr=False):
         """Capture stdout and stderr.
 
         :param title: Title of the captured event
         :type title: str
         :param description: Optional description
         :type description: str
+        :param browse: Open a webbrowse to new event?
+        :type browse: bool
         :param stdout: Capture stdout?
         :type stdout: bool
         :param stderr: Capture stderr?
@@ -197,6 +202,7 @@ class Stream(object):
         return CaptureContext(self,
                               title,
                               description=description,
+                              browse=browse,
                               stdout=stdout,
                               stderr=stderr)
 
