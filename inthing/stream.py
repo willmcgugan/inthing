@@ -1,23 +1,28 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import mimetypes
-import platform
-import os
 import json
-import time
-import tempfile
-import webbrowser
+import logging
+import mimetypes
+import os
 from os.path import basename
+import platform
+import sys
+import tempfile
+import time
+import webbrowser
 
 from . import errors
 from . import urls
-from .rpc import get_interface
-from .event import Event
 from .compat import text_type
+from .event import Event
 from .jsonrpc import JSONRPCError
+from .rpc import get_interface
 
 import requests
+
+
+log = logging.getLogger('inthing')
 
 
 class Result(object):
@@ -39,6 +44,61 @@ class Result(object):
         webbrowser.open(self.url)
 
 
+class _FileCaptureProxy(object):
+    """Proxy a file like object, while intercepting writes."""
+
+    def __init__(self, f, output):
+        self._f = f
+        self._output = output
+
+    def write(self, data):
+        """Hook in to write and store data."""
+        self._f.write(data)
+        if isinstance(data, bytes):
+            data = data.decode(getattr(self._f, 'encoding', None) or 'utf-8', 'replace')
+        self._output.append(data)
+
+    def __getattr__(self, k):
+        return getattr(self._f, k)
+
+
+class CaptureContext(object):
+    """Context manager to capture stdout/stderr."""
+
+    def __init__(self, stream, title, description=None, stdout=True, stderr=True):
+        self.stream = stream
+        self.title = title
+        self.description = None
+        self.result = None
+
+        self._capture_stdout = stdout
+        self._capture_stderr = stderr
+        self._old_stdout = sys.stdout
+        self._old_stderr = sys.stderr
+        self._output = []
+
+    def __enter__(self):
+        """Replace stdout/stderr with proxy objects."""
+        if self._capture_stdout:
+            sys.stdout = _FileCaptureProxy(sys.stdout, self._output)
+        if self._capture_stderr:
+            sys.stderr = _FileCaptureProxy(sys.stdout, self._output)
+        return self
+
+    def __exit__(self, type, value, tb):
+        """Restore stdout/sterr and add event."""
+        if self._capture_stdout:
+            sys.stdout = self._old_stdout
+        if self._capture_stderr:
+            sys.stderr = self._old_stderr
+        output = ''.join(self._output)
+        event = Event(type="code",
+                      description=self.description,
+                      title=self.title,
+                      text=output)
+        self.result = self.stream.add_event(event)
+
+
 class Stream(object):
     """Inthing Stream class interface.
 
@@ -47,7 +107,7 @@ class Stream(object):
 
     """
 
-    def __init__(self, id=None, password=None, generator=None):
+    def __init__(self, id=None, password=None, generator=None, silence_errors=False):
         """Construct a new Stream object.
 
         :param id: The ID of your stream. This may be either a UUID (mixture of letters an numbers),
@@ -56,24 +116,23 @@ class Stream(object):
         :param password: The stream's password, if required. It's possible for a stream to have no
             password, which allows for anyone to post to it.
         :type password: str
-        :param generator: A short string to identify what has created this
+        :param generator: A short string to identify what is creating events.
         :type generator: str
+        :param silence_errors: If True, ignore errors when posting events.
+        :type silence_errors: bool
         :rtype: Stream
 
         """
         self.rpc = get_interface()
         self.id = id or os.environ.get('INTHING_STREAM', None)
         self.password = password or os.environ.get('INTHING_STREAM_PASSWORD', None)
+        self.generator = platform.node() if generator is None else generator
 
         if self.id is None:
-            raise ValueError('Stream ID required')
+            raise ValueError('Stream ID or URL is required')
 
-        if generator is None:
-            generator = platform.node()
-        self.generator = generator
-
+        self.silence_errors = silence_errors
         self.url = None
-        super(Stream, self).__init__()
 
     def __repr__(self):
         """Basic stream info."""
@@ -113,14 +172,33 @@ class Stream(object):
         """Open this stream in your browser."""
         webbrowser.open(self.url)
 
-    def _get(self, stream, password):
-        try:
-            result = self.rpc.call('stream.get', stream=stream, password=password)
-        except JSONRPCError as e:
-            raise errors.StreamError(text_type(e))
-        self.id = result['id']
-        self.url = result['url']
-        self.password = password
+    def capture(self, title, description=None, stdout=True, stderr=False):
+        """Capture stdout and stderr.
+
+        :param title: Title of the captured event
+        :type title: str
+        :param description: Optional description
+        :type description: str
+        :param stdout: Capture stdout?
+        :type stdout: bool
+        :param stderr: Capture stderr?
+        :type stderr: bool
+
+
+        This method returns a context manager, which will capture ``print`` output, and post it to a stream. Here is an example::
+
+            from inthing import Stream
+            stream = Stream.new()
+            with stream.capture(title="Capture Example") as capture:
+                print('This output will go to a stream!')
+            capture.result.browse()
+
+        """
+        return CaptureContext(self,
+                              title,
+                              description=description,
+                              stdout=stdout,
+                              stderr=stderr)
 
     def add_event(self, event):
         """Add an event.
@@ -129,48 +207,53 @@ class Stream(object):
         :type event: Event
 
         """
-        post_args = {}
-        if event.images:
-            path = event.images[0]
-            mime_type = mimetypes.guess_type(path)
-            files = {
-                'image': (basename(path), open(path, 'rb'), mime_type,)
+        try:
+            post_args = {}
+            if event.images:
+                path = event.images[0]
+                mime_type = mimetypes.guess_type(path)
+                files = {
+                    'image': (basename(path), open(path, 'rb'), mime_type,)
+                }
+                post_args['files'] = files
+
+            post_args['data'] = {
+                'stream': self.id,
+                'password': self.password,
+                'title': event.title,
+                'type': event.type,
+                'priority': event.priority,
+                'markup': event.markup,
+                'description': event.description,
+                'text': event.text,
+                'generator': event.generator or self.generator
             }
-            post_args['files'] = files
 
-        post_args['data'] = {
-            'stream': self.id,
-            'password': self.password,
-            'title': event.title,
-            'type': event.type,
-            'priority': event.priority,
-            'markup': event.markup,
-            'description': event.description,
-            'text': event.text,
-            'generator': event.generator or self.generator
-        }
+            url = urls.event_url + '?format=json'
+            try:
+                response = requests.post(url, **post_args)
+            except requests.ConnectionError as e:
+                raise errors.ConnectivityError("unable to contact server")
 
-        url = urls.event_url + '?format=json'
-        try:
-            response = requests.post(url, **post_args)
-        except requests.ConnectionError as e:
-            raise errors.ConnectivityError("unable to contact server")
+            try:
+                result = json.loads(response.content)
+            except Exception as e:
+                raise errors.BadResponse('unable to decode response from server ({})'.format(e))
 
-        try:
-            result = json.loads(response.content)
+            status = result.get('status', '')
+
+            if status == 'ok':
+                return Result(result['event']['url'])
+
+            msg = result.get('msg', 'event error')
+            if status == 'ratelimited':
+                raise errors.RateLimited(msg)
+
+            raise errors.EventFail(result)
         except Exception as e:
-            raise errors.BadResponse('unable to decode response from server ({})'.format(e))
-
-        status = result.get('status', '')
-
-        if status == 'ok':
-            return Result(result['event']['url'])
-
-        msg = result.get('msg', 'event error')
-        if status == 'ratelimited':
-            raise errors.RateLimited(msg)
-
-        raise errors.EventFail(result)
+            if not self.silence_errors:
+                raise
+            log.exception('error in add_event')
 
     def text(self,
              text,
@@ -214,7 +297,7 @@ class Stream(object):
 
         :param code: Path to a file containing code, or an open file object
         :type code: str or open object
-        :param langauge: Programming language.
+        :param language: Programming language.
         :type language: str
         :param description: A description of the source dode.
         :type description: str
@@ -223,7 +306,6 @@ class Stream(object):
         :param markup: Markup type for the description.
         :type markup: str
         :rtype: Result
-
 
         """
         if hasattr(code, 'read'):
@@ -299,7 +381,7 @@ class Stream(object):
                       title=title,
                       description=description,
                       markup=markup,
-                      priority=piority)
+                      priority=priority)
         event.add_image(filename)
         result = self.add_event(event)
         return result
