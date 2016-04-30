@@ -65,18 +65,22 @@ class _FileCaptureProxy(object):
 class CaptureContext(object):
     """Context manager to capture stdout/stderr."""
 
-    def __init__(self, stream, title, description=None, browse=False, stdout=True, stderr=True):
+    def __init__(self, stream, title, description=None, stdout=True, stderr=True):
         self.stream = stream
         self.title = title
         self.description = None
-        self.browse = browse
         self.result = None
+        self.text = None
 
         self._capture_stdout = stdout
         self._capture_stderr = stderr
         self._old_stdout = sys.stdout
         self._old_stderr = sys.stderr
         self._output = []
+
+    def browse(self):
+        """Open a browser to the captured data."""
+        self.result.browse()
 
     def __enter__(self):
         """Replace stdout/stderr with proxy objects."""
@@ -92,14 +96,13 @@ class CaptureContext(object):
             sys.stdout = self._old_stdout
         if self._capture_stderr:
             sys.stderr = self._old_stderr
-        output = ''.join(self._output)
+        text = ''.join(self._output)
         event = Event(type="code",
                       description=self.description,
                       title=self.title,
-                      text=output)
+                      text=text)
         self.result = self.stream.add_event(event)
-        if self.browse:
-            self.result.browse()
+        self.text = text
 
 
 class Stream(object):
@@ -196,13 +199,12 @@ class Stream(object):
             stream = Stream.new()
             with stream.capture(title="Capture Example") as capture:
                 print('This output will go to a stream!')
-            capture.result.browse()
+            capture.browse()
 
         """
         return CaptureContext(self,
                               title,
                               description=description,
-                              browse=browse,
                               stdout=stdout,
                               stderr=stderr)
 

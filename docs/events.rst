@@ -63,6 +63,6 @@ Here's an example::
     stream = Stream.new()
     with stream.capture(title="Capture all the things!") as capture:
         print('Anything you print will get captured...')
-    capture.result.browse()
+    capture.browse()
 
 In the above code, any print statement inside the ``with`` blog will be captured. The text will still appear in your terminal, but when the ``with`` block exists, inthing will upload a new event.

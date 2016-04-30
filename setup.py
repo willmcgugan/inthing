@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3.5"
 ]
 
-long_desc = """inthing.io client"""
+long_desc = """Official inthing.io client"""
 
 setup(
     name='inthing',
