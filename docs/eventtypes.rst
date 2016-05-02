@@ -60,7 +60,7 @@ A *screenshot* event is a special kind of image event that contains a screenshot
 
 Here's how you would upload a screenshot after 5 seconds:
 
-    my_stream.screenshot(self, delay=5, title="My Desktop!")
+    my_stream.screenshot(title="My Desktop!", delay=5)
 
 .. warning:: Be careful with this event, you wouldn't want to screenshot any passwords or nuclear launch codes!
 
