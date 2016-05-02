@@ -7,6 +7,8 @@ from ..subcommand import EventSubCommand
 class Screenshot(EventSubCommand):
     """Add an event to a stream."""
 
+    help = "post a screenshot"
+
     def add_arguments(self, parser):
         super(Screenshot, self).add_arguments(parser)
         parser.add_argument('--image', dest="image",
@@ -16,7 +18,7 @@ class Screenshot(EventSubCommand):
 
     def run_event(self):
         args = self.args
-        result = self.stream.screenshot(text=args.description,
+        result = self.stream.screenshot(description=args.description,
                                         title=args.title or 'Screenshot',
                                         markup=args.markup,
                                         delay=args.delay)

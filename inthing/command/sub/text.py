@@ -7,6 +7,8 @@ from ..subcommand import EventSubCommand
 class Text(EventSubCommand):
     """Add an event to a stream."""
 
+    help = "post text event"
+
     def add_arguments(self, parser):
         super(Text, self).add_arguments(parser)
         parser.add_argument(dest="text",

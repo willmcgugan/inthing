@@ -23,7 +23,7 @@ class Inthing(object):
                             for name, cls in SubCommandMeta.registry.items()}
 
     def get_argparse(self):
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(description="Client for inthing.io")
 
         parser.add_argument('-v', '--version', action='version', version=version)
         parser.add_argument('-d', '--debug', dest="debug", action="store_true", default=False,

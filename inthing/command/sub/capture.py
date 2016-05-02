@@ -12,6 +12,8 @@ from inthing import Stream, Event
 class Capture(EventSubCommand):
     """Capture output to a inthing Stream."""
 
+    help = "capture stdin and post a text event"
+
     MAX_CHARS = 64 * 1024 - 20
 
     def add_arguments(self, parser):
