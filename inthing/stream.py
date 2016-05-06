@@ -382,13 +382,14 @@ class Stream(object):
         if delay:
             time.sleep(delay)
         import pyscreenshot
-        filename = tempfile.mktemp(prefix='inthing', suffix=".jpg")
-        pyscreenshot.grab_to_file(filename)
-        event = Event(type="screenshot",
-                      title=title,
-                      description=description,
-                      markup=markup,
-                      priority=priority)
-        event.add_image(filename)
-        result = self.add_event(event)
+        with tempfile.NamedTemporaryFile(mode='r', prefix='inthing', suffix='.jpg') as f:
+            filename = f.name
+            pyscreenshot.grab_to_file(filename)
+            event = Event(type="screenshot",
+                          title=title,
+                          description=description,
+                          markup=markup,
+                          priority=priority)
+            event.add_image(filename)
+            result = self.add_event(event)
         return result
