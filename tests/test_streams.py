@@ -3,6 +3,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import unittest
+import os
+import os.path
+import tempfile
 
 try:
     import mock
@@ -55,3 +58,16 @@ class TestStream(unittest.TestCase):
         self.assertEqual(event.type, 'text')
         self.assertEqual(event.description, 'this is the text')
         self.assertEqual(event.title, 'My Text')
+
+    def test_add_screenshot(self):
+        stream = Stream('foo', 'bar')
+        with mock.patch('requests.post') as post:
+            post.return_value.json.return_value = {'status': 'ok', 'event': {'url': 'http://foo.bar'}}
+            stream.screenshot(description='this is the description', title="My Text")
+        post_data = post.call_args[1]
+        image_info = post_data['files']['image']
+        assert isinstance(image_info, tuple), 'must be an image tuple'
+        self.assertEqual(len(image_info), 3, 'must contain 3 info')
+        self.assertTrue(image_info[0].endswith('.jpg'), 'must be a jpeg image')
+        self.assertFalse(os.path.exists(os.path.join(tempfile.gettempdir(), image_info[0])), 'the screenshot has to be deleted')
+
